@@ -9,7 +9,7 @@ contract SurveyList {
         uint id;
         bool completed;
         string content;
-        string[] answer;
+        string answer;
         string selectedAnswer;
         
     }
@@ -17,26 +17,34 @@ contract SurveyList {
     struct Survey{
         
         uint id;
-        Question[] question;
-    
+        Question question;
+
+
     }
     
     
-    
-    mapping(uint => Survey) public surveys;
     mapping(uint => Question) public questions;
 
+    mapping(uint => Survey) public surveys;
+
     
-    function createQuestion(string memory _content, string[] memory answer, string memory selectedAnswer) public {
-        questionCount++;
+    function createQuestion(string memory _content, string memory answer, string memory selectedAnswer) public {
         questions[questionCount] = Question(questionCount, false, _content, answer, selectedAnswer);
+        questionCount++;
+
+    }
+    
+    function createSurvey(uint id) public {
+        Question memory question = questions[id];
+        surveys[surveyCount] = Survey(surveyCount, question);
+        surveyCount++;
+
         
     }
     
-    function createSurvey(Question[] memory Question1) public {
-        surveyCount++;
-        surveys[surveyCount] = Survey(surveyCount, Question1);
-        
+    function getQuestion(uint id) public view returns (string memory){
+        Question memory question = questions[id];
+        return (question.answer);
     }
     
     
