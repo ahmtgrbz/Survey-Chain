@@ -9,61 +9,67 @@ contract SurveyList {
     uint public questionCount = 0;
     uint public ParticipantCount = 0;
     
+    string[] public survey_titles;
+
+    
     
     // Survay Struct model
     struct Survey{
         uint id;
         string title;
         Question question;
+        uint particapant_number;
     }
     
     // Question Struct model
     struct Question{
         uint id;
-        bool completed;
         string content;
         string answer;
-        string selectedAnswer;
     }
     
     struct Participant{
         address p_address;
         string name;
         uint age;
-        uint joined_surveys;
     }
     
     address[] participant_list;
     
     //------------events for creating question and survey------------ .
-    event QuestionCreated(uint id, bool completed, string _content, string answer, string selectedAnswer);
-    event SurveyCreated(uint id, string title, Question question);
-    event ParticipantCreated(address p_address, string name, uint age, uint joined_surveys);
+    event QuestionCreated(uint id, string _content, string answer);
+    event SurveyCreated(uint id, string title, Question question, uint particapant_number);
+    event ParticipantCreated(address p_address, string name, uint age);
 
     
     //Creating mapping structure to keep data for question and survey.
     mapping(uint => Question) public questions;
     mapping(uint => Survey) public surveys;
     mapping(address => Participant) public participants;
+    
+
 
     //------------Creating functions------------
-    function createQuestion(string memory _content, string memory answer, string memory selectedAnswer) public {
-        questions[questionCount] = Question(questionCount, false, _content, answer, selectedAnswer);
-        emit QuestionCreated(questionCount, false,_content, answer, selectedAnswer);
+    function createQuestion(string memory _content, string memory answer) public {
+        questions[questionCount] = Question(questionCount, _content, answer);
+        emit QuestionCreated(questionCount, _content, answer);
         questionCount++;
     }
     
     function createSurvey(uint id, string memory title) public {
         Question memory question = questions[id];
-        surveys[surveyCount] = Survey(surveyCount,title, question);
-        emit SurveyCreated(surveyCount, title, question);
+        surveys[surveyCount] = Survey(surveyCount,title, question, 0);
+        emit SurveyCreated(surveyCount, title, question, 0);
         surveyCount++;
+        survey_titles.push(title);
+
     }
+    
     
     function createParticipant(string memory name, uint age) public{
         
-        participants[address(this)] = Participant(address(this), name, age, ParticipantCount);
-        emit ParticipantCreated(address(this), name, age, ParticipantCount);
+        participants[address(this)] = Participant(address(this), name, age);
+        emit ParticipantCreated(address(this), name, age);
         participant_list.push(address(this));
     }
     
@@ -77,11 +83,14 @@ contract SurveyList {
     
     function getQuestion(uint id) public view returns (string memory){
         Question memory question = questions[id];
-        return (question.answer);
+        return (question.content);
     }
     
     function getParticipantCount() public view returns (uint c){
         return participant_list.length;
+    } 
+    function getParticipantAddress() public view returns (address p_address){
+        return address(this);
     } 
     
 }
