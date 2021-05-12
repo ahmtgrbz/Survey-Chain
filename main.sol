@@ -8,10 +8,8 @@ contract SurveyList {
     uint public surveyCount = 0;
     uint public questionCount = 0;
     uint public ParticipantCount = 0;
-    
-    string[] public survey_titles;
+    uint public AnswerCount = 0;
 
-    
     
     // Survay Struct model
     struct Survey{
@@ -34,7 +32,16 @@ contract SurveyList {
         uint age;
     }
     
+    struct Answer{
+        uint answer_id;
+        address who_participated;
+        uint survey_id;
+        string answer;
+    }
+    
+    string[] public survey_titles;
     address[] participant_list;
+    mapping(address => uint[]) public surveylist_of_participant;
     
     //------------events for creating question and survey------------ .
     event QuestionCreated(uint id, string _content, string answer);
@@ -46,6 +53,8 @@ contract SurveyList {
     mapping(uint => Question) public questions;
     mapping(uint => Survey) public surveys;
     mapping(address => Participant) public participants;
+    mapping(uint => Answer) public answers;
+
     
 
 
@@ -65,6 +74,15 @@ contract SurveyList {
 
     }
     
+    function joinTheSurvey(uint survey_id, string memory answer) public {
+        Survey memory the_survey = surveys[survey_id];
+        answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
+
+        AnswerCount++;
+        surveylist_of_participant[address(this)].push(surveyCount);
+        the_survey.particapant_number++;
+
+    }
     
     function createParticipant(string memory name, uint age) public{
         
@@ -75,9 +93,9 @@ contract SurveyList {
     
     
     //------------Getter functions------------
-      function getSurvey(uint id) public view returns (string memory){
+    function getSurvey(uint id) public view returns (string memory title, uint particapant_number){
         Survey memory survey = surveys[id];
-        return (survey.title);
+        return (survey.title, survey.particapant_number);
     }
     
     
@@ -86,10 +104,10 @@ contract SurveyList {
         return (question.content);
     }
     
-    function getParticipantCount() public view returns (uint c){
+    function getParticipantCount() public view returns (uint ){
         return participant_list.length;
     } 
-    function getParticipantAddress() public view returns (address p_address){
+    function getParticipantAddress() public view returns (address ){
         return address(this);
     } 
     
