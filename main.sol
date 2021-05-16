@@ -15,7 +15,6 @@ contract SurveyList {
     struct Survey{
         uint id;
         string title;
-        Question question;
         uint particapant_number;
     }
     
@@ -24,6 +23,8 @@ contract SurveyList {
         uint id;
         string content;
         string answer;
+        
+        
     }
     
     struct Participant{
@@ -36,25 +37,27 @@ contract SurveyList {
         uint answer_id;
         address who_participated;
         uint survey_id;
-        string answer;
+        string a_answer;// bir answerda birden fazla cevap olabilir
     }
     
     string[] public survey_titles;
     address[] participant_list;
     mapping(address => uint[]) public surveylist_of_participant;
+    mapping(uint => uint[]) public questions_of_anysurvey;
+    
     
     //------------events for creating question and survey------------ .
     event QuestionCreated(uint id, string _content, string answer);
-    event SurveyCreated(uint id, string title, Question question, uint particapant_number);
+    event SurveyCreated(uint id, string title, uint particapant_number);
     event ParticipantCreated(address p_address, string name, uint age);
 
     
     //Creating mapping structure to keep data for question and survey.
     mapping(uint => Question) public questions;
-    mapping(uint => Survey) public surveys;
+    mapping(uint => Survey) public surveys;  // kaç anket olduğunu bilmiyoruz ki nasıl topluca dönecek array
     mapping(address => Participant) public participants;
-    mapping(uint => Answer) public answers;
-
+    mapping(uint => Answer) public answers; //map burada
+//bir map daha gere
     
 
 
@@ -65,19 +68,19 @@ contract SurveyList {
         questionCount++;
     }
     
-    function createSurvey(uint id, string memory title) public {
-        Question memory question = questions[id];
-        surveys[surveyCount] = Survey(surveyCount,title, question, 0);
-        emit SurveyCreated(surveyCount, title, question, 0);
+    function createSurvey(uint[] memory Questionid, string memory title) public returns(uint){
+        questions_of_anysurvey[surveyCount] = Questionid;
+        surveys[surveyCount] = Survey(surveyCount,title, 0);
+        emit SurveyCreated(surveyCount, title, 0);
         surveyCount++;
         survey_titles.push(title);
+        return surveyCount-1;
 
     }
     
-    function joinTheSurvey(uint survey_id, string memory answer) public {
+    function joinTheSurvey(uint survey_id, string memory answer) public { //kullanıcı ankete katılır
         Survey memory the_survey = surveys[survey_id];
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
-
         AnswerCount++;
         surveylist_of_participant[address(this)].push(surveyCount);
         the_survey.particapant_number++;
@@ -93,9 +96,9 @@ contract SurveyList {
     
     
     //------------Getter functions------------
-    function getSurvey(uint id) public view returns (string memory title, uint particapant_number){
+    function getSurvey(uint id) public view returns (string memory title, uint soru1, uint soru2){
         Survey memory survey = surveys[id];
-        return (survey.title, survey.particapant_number);
+        return (survey.title, questions_of_anysurvey[id][0], questions_of_anysurvey[id][1]);
     }
     
     
@@ -104,11 +107,15 @@ contract SurveyList {
         return (question.content);
     }
     
-    function getParticipantCount() public view returns (uint ){
+    function getParticipantCount() public view returns (uint){
         return participant_list.length;
     } 
-    function getParticipantAddress() public view returns (address ){
+    function getParticipantAddress() public view returns (address){
         return address(this);
+    } 
+    
+    function getSurveyCount() public view returns (uint){
+        return surveyCount;
     } 
     
 }
