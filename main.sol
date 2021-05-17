@@ -83,7 +83,7 @@ contract SurveyList {
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
         AnswerCount++;
         surveylist_of_participant[address(this)].push(surveyCount);
-        the_survey.particapant_number++;
+        the_survey.particapant_number +=1;
 
     }
     
