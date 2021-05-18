@@ -22,7 +22,7 @@ contract SurveyList {
     struct Question{
         uint id;
         string content;
-        string answer;
+        string[] answer;
         
         
     }
@@ -37,7 +37,7 @@ contract SurveyList {
         uint answer_id;
         address who_participated;
         uint survey_id;
-        string a_answer;// bir answerda birden fazla cevap olabilir
+        string[] a_answer;// bir answerda birden fazla cevap olabilir
     }
     
     string[] public survey_titles;
@@ -47,7 +47,7 @@ contract SurveyList {
     
     
     //------------events for creating question and survey------------ .
-    event QuestionCreated(uint id, string _content, string answer);
+    event QuestionCreated(uint id, string _content, string[] answer);
     event SurveyCreated(uint id, string title, uint particapant_number);
     event ParticipantCreated(address p_address, string name, uint age);
 
@@ -62,7 +62,7 @@ contract SurveyList {
 
 
     //------------Creating functions------------
-    function createQuestion(string memory _content, string memory answer) public {
+    function createQuestion(string memory _content, string[] memory answer) public {
         questions[questionCount] = Question(questionCount, _content, answer);
         emit QuestionCreated(questionCount, _content, answer);
         questionCount++;
@@ -78,7 +78,7 @@ contract SurveyList {
 
     }
     
-    function joinTheSurvey(uint survey_id, string memory answer) public { //kullanıcı ankete katılır
+    function joinTheSurvey(uint survey_id, string[] memory answer) public { //kullanıcı ankete katılır
         Survey memory the_survey = surveys[survey_id];
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
         AnswerCount++;
@@ -96,15 +96,15 @@ contract SurveyList {
     
     
     //------------Getter functions------------
-    function getSurvey(uint id) public view returns (string memory title, uint soru1, uint soru2){
+    function getSurvey(uint id) public view returns (string memory title, uint[] memory soru1){
         Survey memory survey = surveys[id];
-        return (survey.title, questions_of_anysurvey[id][0], questions_of_anysurvey[id][1]);
+        return (survey.title, questions_of_anysurvey[id]);
     }
     
     
-    function getQuestion(uint id) public view returns (string memory){
+    function getQuestion(uint id) public view returns (string memory,string[] memory q_answers){
         Question memory question = questions[id];
-        return (question.content);
+        return (question.content,question.answer);
     }
     
     function getParticipantCount() public view returns (uint){
@@ -118,4 +118,8 @@ contract SurveyList {
         return surveyCount;
     } 
     
+    function getanswer(uint a_id) public view returns (string[] memory ans){ //test fonksiyonu
+        ans = answers[a_id].a_answer;
+        return ans;
+    }
 }
