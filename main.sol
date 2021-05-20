@@ -16,6 +16,7 @@ contract SurveyList {
         uint id;
         string title;
         uint particapant_number;
+        bool s_isfull;
     }
     
     // Question Struct model
@@ -23,13 +24,14 @@ contract SurveyList {
         uint id;
         string content;
         string[] options;
+        bool q_isfull;
     }
     
     struct Participant{
         address p_address;
         string name;
         uint age;
-        bool isempty;
+        bool isfull;
     }
     
     struct Answer{
@@ -41,8 +43,8 @@ contract SurveyList {
    
     //------------events for creating question and survey------------ .
     event QuestionCreated(uint id, string _content, string[] answer);
-    event SurveyCreated(uint id, string _title, uint particapant_number);
-    event ParticipantCreated(address p_address, string name, uint age , bool isempty);
+    event SurveyCreated(uint id, string _title, uint particapant_number, bool s_isfull);
+    event ParticipantCreated(address p_address, string name, uint age , bool isfull);
 
     
     //Creating mapping structure to keep data for question and survey.
@@ -85,25 +87,19 @@ contract SurveyList {
        _;
     }
     
-    //-----ornek modifier 
-    modifier AvbAnswer(uint survey_id,string[] memory answer) {
-    uint[] memory q = questions_of_anysurvey[survey_id];
-    uint flag = 0;
-     for(uint i = 0; i <= q.length; i++){
-         
-        for(uint j = 0; j <= questions[q[i]].options.length; j++){
-           if(keccak256(abi.encodePacked(questions[q[i]].options[j])) == keccak256(abi.encodePacked(answer[i]))){
-              flag++;
+    //bugg problemi oluşturuyor.
+    /*modifier questioncontrol(uint[] memory Questionid){
+       bool flag = true;
+       for(uint i = 0; i <= Questionid.length ; i++){
+           if(questions[Questionid[i]].q_isfull == false ){
+              flag = false;
            }
-        }
-     }
-     require(flag == q.length ,"the answer does not match the question option");
-     _;
-    }
+       }
+       require(flag,"Question was not found,Please check questions ids.");
+       _;
+    }*/
     
-    
-    
-    
+
     constructor(){
       owner = msg.sender;
    }
@@ -114,7 +110,7 @@ contract SurveyList {
     //------------Creating functions------------
     function createQuestion(string memory _content, string[] memory answer) public ownerOnly duplicatequestion(_content,answer){
         require(bytes(_content).length > 0 && answer.length>0,"Please Fill In The Blanks");
-        questions[questionCount] = Question(questionCount, _content, answer);
+        questions[questionCount] = Question(questionCount, _content, answer ,true);
         emit QuestionCreated(questionCount, _content, answer);
         questionCount++;
     }
@@ -122,17 +118,18 @@ contract SurveyList {
     function createSurvey(string memory _title,uint[] memory Questionid) public ownerOnly duplicatesurvey(_title, Questionid) returns(uint) {
         require(bytes(_title).length > 0 && Questionid.length>0,"Please Fill In The Blanks");
         questions_of_anysurvey[surveyCount] = Questionid;
-        surveys[surveyCount] = Survey(surveyCount,_title, 0);
-        emit SurveyCreated(surveyCount, _title, 0);
+        surveys[surveyCount] = Survey(surveyCount,_title, 0, true);
+        emit SurveyCreated(surveyCount, _title, 0, true);
         surveyCount++;
         survey_titles.push(_title);
         return surveyCount-1;
 
     }
     
-    function joinTheSurvey(uint survey_id, string[] memory answer) public AvbAnswer(survey_id,answer) {
+    function joinTheSurvey(uint survey_id, string[] memory answer) public {
         require(answer.length>0,"Please Fill In The Blanks");
-        require(participants[address(this)].isempty == true,"Please firstly create a participant account.");
+        require(participants[address(this)].isfull == true,"Please firstly create a participant account.");
+        require(surveys[survey_id].s_isfull == true , "Survey not found, Please check Survey id.");
         Survey memory the_survey = surveys[survey_id];
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
         AnswerCount++;
@@ -143,7 +140,7 @@ contract SurveyList {
     
     function createParticipant(string memory name, uint age) public{
         require(bytes(name).length > 0 && age > 0,"Please Fill In The Blanks");
-        require(participants[address(this)].isempty == false,"You don't have participant account / You can't create duplicate account.");
+        require(participants[address(this)].isfull == false,"You don't have participant account / You can't create duplicate account.");
         participants[address(this)] = Participant(address(this), name, age, true);
         emit ParticipantCreated(address(this), name, age ,true);
         participant_list.push(address(this));
