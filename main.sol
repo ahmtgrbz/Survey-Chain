@@ -86,20 +86,20 @@ contract SurveyList {
     }
     
     //-----ornek modifier 
-    /* modifier AvbAnswer(uint survey_id,string[] memory answer) {
+    modifier AvbAnswer(uint survey_id,string[] memory answer) {
     uint[] memory q = questions_of_anysurvey[survey_id];
     uint flag = 0;
      for(uint i = 0; i <= q.length; i++){
          
-        for(uint j = 0; j <= questions[i].options.length; j++){
-           if(keccak256(abi.encodePacked(questions[i].options[j])) == keccak256(abi.encodePacked(answer[i]))){
+        for(uint j = 0; j <= questions[q[i]].options.length; j++){
+           if(keccak256(abi.encodePacked(questions[q[i]].options[j])) == keccak256(abi.encodePacked(answer[i]))){
               flag++;
            }
         }
      }
      require(flag == q.length ,"the answer does not match the question option");
      _;
-    }*/
+    }
     
     
     
@@ -130,7 +130,7 @@ contract SurveyList {
 
     }
     
-    function joinTheSurvey(uint survey_id, string[] memory answer) public {
+    function joinTheSurvey(uint survey_id, string[] memory answer) public AvbAnswer(survey_id,answer) {
         require(answer.length>0,"Please Fill In The Blanks");
         require(participants[address(this)].isempty == true,"Please firstly create a participant account.");
         Survey memory the_survey = surveys[survey_id];
