@@ -62,6 +62,23 @@ contract SurveyList {
       require(msg.sender == owner, "You are not a owner.");
       _;
     }
+    
+    
+    
+    modifier duplicateanswer(address ad,uint survey_id){
+        bool flag = true;
+        uint[] memory test = surveylist_of_participant[ad];
+        for(uint i = 0; i<surveylist_of_participant[ad].length; i++ ){
+            
+            if(surveylist_of_participant[ad][i] == survey_id ){
+                flag = false;
+            }
+        }
+        require(flag, "You can not join againg this Survey." );
+        _;
+    }
+    
+    
    
     modifier duplicatequestion(string memory _content, string[] memory answer){
        bool flag = true;
@@ -126,14 +143,14 @@ contract SurveyList {
 
     }
     
-    function joinTheSurvey(uint survey_id, string[] memory answer) public {
+    function joinTheSurvey(uint survey_id, string[] memory answer) public duplicateanswer(address(this),survey_id) {
         require(answer.length>0,"Please Fill In The Blanks");
         require(participants[address(this)].isfull == true,"Please firstly create a participant account.");
         require(surveys[survey_id].s_isfull == true , "Survey not found, Please check Survey id.");
         Survey memory the_survey = surveys[survey_id];
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
         AnswerCount++;
-        surveylist_of_participant[address(this)].push(surveyCount);
+        surveylist_of_participant[address(this)].push(survey_id);
         the_survey.particapant_number +=1;
 
     }
