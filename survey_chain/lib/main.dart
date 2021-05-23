@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'feature/home_view/home_view.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  await DotEnv.load(fileName: ".env");
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override

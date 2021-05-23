@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:survey_chain/feature/home_view/service/ethereum_chain_service.dart';
 import 'package:web3dart/web3dart.dart';
 
 class HomeView extends StatefulWidget {
@@ -9,35 +9,16 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late Web3Client ethClient;
-  late Client httpClient;
   var metamaskAddress = '0x07DcFf621b8D5d1fD69b9328fB1cb7504Bc98901';
 
   @override
   void initState() {
     super.initState();
-    httpClient = Client();
-    ethClient = Web3Client('HTTP://127.0.0.1:7545', httpClient);
-  }
-
-  Future<DeployedContract?> loadContract() async {
-    var abiJson = await rootBundle.loadString('assets/json/survey_list.json');
-    var contractAddress = '0x24589F2e9732afa472FAdC16477cBE32813c278B';
-
-    final contract = DeployedContract(
-      ContractAbi.fromJson(abiJson, 'Survey'),
-      EthereumAddress.fromHex(contractAddress),
+    EthereumChainService.instance.httpClient = Client();
+    EthereumChainService.instance.ethClient = Web3Client(
+      'https://ropsten.infura.io/v3/48a0bdb48ab24a9c859fa60e8068b8de',
+      EthereumChainService.instance.httpClient,
     );
-
-    return contract;
-  }
-
-  Future<List?>? query(String functionName, List<dynamic> args) async {
-    final contract = await loadContract();
-    final ethFunction = contract!.function(functionName);
-    final result = await ethClient.call(
-        contract: contract, function: ethFunction, params: args);
-    return result;
   }
 
   @override
@@ -47,7 +28,11 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              //EthereumChainService.instance.getParticipantCount();
+              EthereumChainService.instance
+                  .createParticipant('Alican', BigInt.from(21));
+            },
             icon: Icon(Icons.create),
           ),
         ],
