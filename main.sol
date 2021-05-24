@@ -73,16 +73,14 @@ contract SurveyList {
     
     
     
-    modifier joinedBefore(address ad,uint survey_id){
+    modifier joinedBefore(address _address, uint survey_id){
         bool flag = true;
-        uint[] memory test = surveylist_of_participant[ad];
-        for(uint i = 0; i<surveylist_of_participant[ad].length; i++ ){
-            
-            if(surveylist_of_participant[ad][i] == survey_id ){
+        for(uint i = 0; i<surveylist_of_participant[_address].length; i++){
+            if(surveylist_of_participant[_address][i] == survey_id){
                 flag = false;
             }
         }
-        require(flag, "You have already joined this survey before!" );
+        require(flag, "You have already joined this survey before!");
         _;
     }
     
@@ -95,20 +93,20 @@ contract SurveyList {
               flag = false;
            }
        }
-       require(flag,"This question created before!");
+       require(flag, "This question created before!");
        _;
     }
    
    
    
-   modifier createdSurveyBefore(string memory  _title, uint[] memory Questionid){
+   modifier createdSurveyBefore(string memory _title, uint[] memory Questionid){
        bool flag = true;
        for(uint i = 0; i <= surveyCount ; i++){
            if(keccak256(abi.encodePacked(surveys[i].title)) == keccak256(abi.encodePacked(_title)) && Questionid.length ==  questions_of_anysurvey[i].length){
               flag = false;
            }
        }
-       require(flag,"This survey created before!");
+       require(flag, "This survey created before!");
        _;
     }
     
@@ -116,14 +114,14 @@ contract SurveyList {
    
     // ---------- Creating functions ----------
     function createQuestion(string memory _content, string[] memory answer) public ownerOnly createdQuestionBefore(_content,answer){
-        require(bytes(_content).length > 0 && answer.length>0,"Please Fill In The Blanks");
+        require(bytes(_content).length > 0 && answer.length>0, "Please Fill In The Blanks");
         questions[questionCount] = Question(questionCount, _content, answer ,true);
         emit QuestionCreated(questionCount, _content, answer);
         questionCount++;
     }
     
     function createSurvey(string memory _title,uint[] memory Questionid) public ownerOnly createdSurveyBefore(_title, Questionid) returns(uint) {
-        require(bytes(_title).length > 0 && Questionid.length>0,"Please Fill In The Blanks");
+        require(bytes(_title).length > 0 && Questionid.length>0, "Please Fill In The Blanks");
         questions_of_anysurvey[surveyCount] = Questionid;
         surveys[surveyCount] = Survey(surveyCount,_title, 0, true);
         emit SurveyCreated(surveyCount, _title, 0, true);
@@ -134,9 +132,9 @@ contract SurveyList {
     }
     
     function joinTheSurvey(uint survey_id, string[] memory answer) public joinedBefore(address(this), survey_id) {
-        require(answer.length>0,"Please Fill In The Blanks");
-        require(participants[address(this)].isfull == true,"Please firstly create a participant account.");
-        require(surveys[survey_id].s_isfull == true , "Survey not found, Please check Survey id.");
+        require(answer.length>0, "Please Fill In The Blanks");
+        require(participants[address(this)].isfull == true, "To join survey, you should log in first.");
+        require(surveys[survey_id].s_isfull == true, "Given survey id not found!");
         Survey memory the_survey = surveys[survey_id];
         answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
         AnswerCount++;
@@ -146,8 +144,8 @@ contract SurveyList {
     }
     
     function createParticipant(string memory name, uint age) public{
-        require(bytes(name).length > 0 && age > 0,"Please Fill In The Blanks");
-        require(participants[address(this)].isfull == false,"You don't have participant account / You can't create duplicate account.");
+        require(bytes(name).length > 0 && age > 0, "Please Fill In The Blanks");
+        require(participants[address(this)].isfull == false, "You don't have participant account / You can't create duplicate account.");
         participants[address(this)] = Participant(address(this), name, age, true);
         emit ParticipantCreated(address(this), name, age ,true);
         participant_list.push(address(this));
