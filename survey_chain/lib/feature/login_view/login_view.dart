@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart';
+import 'package:survey_chain/feature/home_view/service/ethereum_chain_service.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 
 class LoginView extends StatefulWidget {
   @override
@@ -8,6 +12,25 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   var _formKey = GlobalKey<FormState>();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _ageController = TextEditingController();
+  static final RegExp nameRegexp = RegExp('[a-zA-Z]');
+  static final RegExp numberRegexp = RegExp(r'\d');
+
+  String _userName = '';
+  late BigInt _userAge;
+
+  @override
+  void initState() {
+    super.initState();
+    String? infuraLink = DotEnv.env['INFURA'];
+    EthereumChainService.instance.httpClient = Client();
+    EthereumChainService.instance.ethClient = Web3Client(
+      infuraLink!,
+      EthereumChainService.instance.httpClient,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +70,15 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                controller: _nameController,
                 keyboardType: TextInputType.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    'Name can not be empty';
+                  } else {
+                    _userName = value;
+                  }
+                },
                 decoration: InputDecoration(
                   labelText: "Name",
                   labelStyle: TextStyle(
@@ -76,7 +107,18 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                controller: _ageController,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value != null &&
+                      value.isNotEmpty &&
+                      numberRegexp.hasMatch(value)) {
+                    var val = int.parse(value);
+                    _userAge = BigInt.from(val);
+                  } else {
+                    'Enter valid an age!';
+                  }
+                },
                 decoration: InputDecoration(
                   labelText: "Age",
                   labelStyle: TextStyle(
@@ -101,7 +143,12 @@ class _LoginViewState extends State<LoginView> {
               flex: 3,
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                if (_formKey.currentState!.validate()) {
+                  EthereumChainService.instance
+                      .createParticipant(_userName, _userAge);
+                }
+              },
               child: Container(
                 child: Center(
                   child: Text("Discover Surveys",

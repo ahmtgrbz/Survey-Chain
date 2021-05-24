@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:survey_chain/feature/home_view/service/ethereum_chain_service.dart';
 import 'package:web3dart/web3dart.dart';
+
+import 'service/ethereum_chain_service.dart';
 
 class HomeView extends StatefulWidget {
   @override

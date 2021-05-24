@@ -25,6 +25,27 @@ class EthereumChainService extends IEthereumChainService {
   }
 
   @override
+  Future<String?>? submit(String functionName, List<dynamic> args) async {
+    String? metamaskPrivateKey = DotEnv.env['METAMASK'];
+    EthPrivateKey credentials = EthPrivateKey.fromHex(metamaskPrivateKey!);
+    DeployedContract? contract =
+        await EthereumChainService.instance.loadContract();
+    if (contract != null) {
+      final ethFunction = contract.function(functionName);
+      final result = await ethClient.sendTransaction(
+        credentials,
+        Transaction.callContract(
+            contract: contract, function: ethFunction, parameters: args),
+        chainId: 3,
+        //fetchChainIdFromNetworkId: true,
+      );
+      return result;
+    } else {
+      throw Exception();
+    }
+  }
+
+  @override
   Future<DeployedContract?> loadContract() async {
     var abiJson = await rootBundle.loadString('assets/json/survey_list.json');
     var contractAddress = DotEnv.env['CONTRACT_ADDRESS'];
@@ -48,26 +69,5 @@ class EthereumChainService extends IEthereumChainService {
   Future<void> createParticipant(String name, BigInt age) async {
     var result = await submit('createParticipant', [name, age]);
     print(result);
-  }
-
-  @override
-  Future<String?>? submit(String functionName, List<dynamic> args) async {
-    String? metamaskPrivateKey = DotEnv.env['METAMASK'];
-    EthPrivateKey credentials = EthPrivateKey.fromHex(metamaskPrivateKey!);
-    DeployedContract? contract =
-        await EthereumChainService.instance.loadContract();
-    if (contract != null) {
-      final ethFunction = contract.function(functionName);
-      final result = await ethClient.sendTransaction(
-        credentials,
-        Transaction.callContract(
-            contract: contract, function: ethFunction, parameters: args),
-        chainId: 3,
-        //fetchChainIdFromNetworkId: true,
-      );
-      return result;
-    } else {
-      throw Exception();
-    }
   }
 }
