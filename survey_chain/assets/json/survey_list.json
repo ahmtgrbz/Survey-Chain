@@ -219,7 +219,7 @@
 				"type": "uint256"
 			}
 		],
-		"name": "getanswer",
+		"name": "getAnswer",
 		"outputs": [
 			{
 				"internalType": "string[]",
@@ -275,6 +275,19 @@
 				"internalType": "string[]",
 				"name": "q_answers",
 				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getQuestionCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

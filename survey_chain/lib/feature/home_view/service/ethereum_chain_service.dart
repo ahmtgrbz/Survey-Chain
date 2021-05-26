@@ -7,13 +7,8 @@ import 'package:web3dart/web3dart.dart';
 import 'IEthereumChainService.dart';
 
 class EthereumChainService extends IEthereumChainService {
-  static EthereumChainService? _instance;
-  static EthereumChainService get instance =>
-      _instance ??= EthereumChainService._init();
-  EthereumChainService._init();
-
-  late Web3Client ethClient;
-  late Client httpClient;
+  EthereumChainService(Web3Client ethClient, Client httpClient)
+      : super(ethClient, httpClient);
 
   @override
   Future<List?>? query(String functionName, List<dynamic> args) async {
@@ -28,8 +23,7 @@ class EthereumChainService extends IEthereumChainService {
   Future<String?>? submit(String functionName, List<dynamic> args) async {
     String? metamaskPrivateKey = DotEnv.env['METAMASK'];
     EthPrivateKey credentials = EthPrivateKey.fromHex(metamaskPrivateKey!);
-    DeployedContract? contract =
-        await EthereumChainService.instance.loadContract();
+    DeployedContract? contract = await loadContract();
     if (contract != null) {
       final ethFunction = contract.function(functionName);
       final result = await ethClient.sendTransaction(
@@ -63,11 +57,52 @@ class EthereumChainService extends IEthereumChainService {
     if (result is List) {
       return result[0];
     }
+    throw Exception(); // ERROR
   }
 
   @override
   Future<void> createParticipant(String name, BigInt age) async {
     var result = await submit('createParticipant', [name, age]);
     print(result);
+  }
+
+  @override
+  Future<List?>? getSurvey(int id) async {
+    var result = await query('getSurvey', [BigInt.from(id)]);
+
+    if (result != null) {
+      return result;
+    }
+    throw Exception();
+  }
+
+  @override
+  Future<List?>? getQuestion(int id) async {
+    var result = await query('getQuestion', [BigInt.from(id)]);
+
+    if (result != null) {
+      return result;
+    }
+    throw Exception();
+  }
+
+  @override
+  Future<int>? getSurveyCount() async {
+    var result = await query('getSurveyCount', []);
+    if (result is List) {
+      var bigIntData = result[0];
+      return bigIntData.toInt();
+    }
+    throw Exception(); // ERROR
+  }
+
+  @override
+  Future<int>? getQuestionCount() async {
+    var result = await query('getQuestionCount', []);
+    if (result is List) {
+      var bigIntData = result[0];
+      return bigIntData.toInt();
+    }
+    throw Exception(); // ERROR
   }
 }
