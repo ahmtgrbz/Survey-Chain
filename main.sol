@@ -183,4 +183,8 @@ contract SurveyList {
         return ans;
     }
     
+    function getQuestionCount() public view returns (uint){
+        return questionCount;
+    }
+    
 }
