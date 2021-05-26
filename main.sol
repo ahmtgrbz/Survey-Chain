@@ -131,24 +131,24 @@ contract SurveyList {
 
     }
     
-    function joinTheSurvey(uint survey_id, string[] memory answer) public joinedBefore(address(this), survey_id) {
+    function joinTheSurvey(uint survey_id, string[] memory answer) public joinedBefore(msg.sender, survey_id) {
         require(answer.length>0, "Please Fill In The Blanks");
-        require(participants[address(this)].isfull == true, "To join survey, you should log in first.");
+        require(participants[msg.sender].isfull == true, "To join survey, you should log in first.");
         require(surveys[survey_id].s_isfull == true, "Given survey id not found!");
         Survey memory the_survey = surveys[survey_id];
-        answers[AnswerCount] = Answer(AnswerCount, address(this), survey_id, answer);
+        answers[AnswerCount] = Answer(AnswerCount, msg.sender, survey_id, answer);
         AnswerCount++;
-        surveylist_of_participant[address(this)].push(survey_id);
+        surveylist_of_participant[msg.sender].push(survey_id);
         the_survey.particapant_number +=1;
 
     }
     
     function createParticipant(string memory name, uint age) public{
         require(bytes(name).length > 0 && age > 0, "Please Fill In The Blanks");
-        require(participants[address(this)].isfull == false, "You don't have participant account / You can't create duplicate account.");
-        participants[address(this)] = Participant(address(this), name, age, true);
-        emit ParticipantCreated(address(this), name, age ,true);
-        participant_list.push(address(this));
+        require(participants[msg.sender].isfull == false, "You don't have participant account / You can't create duplicate account.");
+        participants[msg.sender] = Participant(msg.sender, name, age, true);
+        emit ParticipantCreated(msg.sender, name, age ,true);
+        participant_list.push(msg.sender);
     }
     
     
@@ -171,7 +171,7 @@ contract SurveyList {
     } 
     
     function getParticipantAddress() public view returns (address){
-        return address(this);
+        return msg.sender;
     } 
     
     function getSurveyCount() public view returns (uint){
