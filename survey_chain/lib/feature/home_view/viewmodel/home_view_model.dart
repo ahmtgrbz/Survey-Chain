@@ -44,9 +44,8 @@ abstract class _HomeViewModelBase with Store {
       var question = (await service.getQuestion(i))!;
       questionMap.putIfAbsent(question[0], () => question[1]);
     }
+    isLoading = false;
     print(questionMap.toString());
     print(surveyMap.toString());
-
-    isLoading = false;
   }
 }

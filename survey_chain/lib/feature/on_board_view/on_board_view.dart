@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../core/navigation/navigation_service.dart';
+import '../../core/constants/navigation_constants.dart';
+
 class OnboardView extends StatefulWidget {
   @override
   _OnboardViewState createState() => _OnboardViewState();
@@ -44,7 +47,10 @@ class _OnboardViewState extends State<OnboardView> {
           ),
           Spacer(),
           InkWell(
-            onTap: () => {},
+            onTap: () => {
+              NavigationService.instance
+                  .navigateToPage(path: NavigationConstants.LOGIN_VIEW),
+            },
             child: Container(
               child: Center(
                 child: Text("Let’s Start",

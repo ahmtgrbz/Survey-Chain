@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
+import 'package:survey_chain/core/constants/navigation_constants.dart';
+import 'package:survey_chain/core/navigation/navigation_service.dart';
 import 'package:survey_chain/feature/home_view/viewmodel/home_view_model.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -151,11 +153,15 @@ class _LoginViewState extends State<LoginView> {
               flex: 3,
             ),
             InkWell(
-              onTap: () {
+              onTap: () async {
                 if (_formKey.currentState!.validate()) {
-                  _homeViewModel.service.createParticipant(
+                  await _homeViewModel.service.createParticipant(
                       participantModel.name ?? '',
                       participantModel.age ?? BigInt.from(0));
+                  NavigationService.instance.navigateToPage(
+                    path: NavigationConstants.HOME_VIEW,
+                    data: participantModel,
+                  );
                 }
               },
               child: Container(

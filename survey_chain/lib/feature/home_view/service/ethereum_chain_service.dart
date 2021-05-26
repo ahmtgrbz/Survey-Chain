@@ -77,7 +77,7 @@ class EthereumChainService extends IEthereumChainService {
   }
 
   @override
-  Future<List?>? getQuestion(int id) async {
+  Future<List<dynamic>?>? getQuestion(int id) async {
     var result = await query('getQuestion', [BigInt.from(id)]);
 
     if (result != null) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -31,9 +32,7 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              _homeViewModel.service.getQuestion(0);
-            },
+            onPressed: () {},
             icon: Icon(Icons.data_saver_off),
           ),
         ],
@@ -48,16 +47,21 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
                 fontSize: 20.0),
             textAlign: TextAlign.center),
       ),
-      body: _homeViewModel.isLoading
-          ? CircularProgressIndicator()
-          : buildListViewBody(),
+      body: Observer(
+        builder: (_) => _homeViewModel.isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : buildListViewBody(),
+      ),
     );
   }
 
   ListView buildListViewBody() {
     return ListView.builder(
-      itemCount: 4,
+      itemCount: _homeViewModel.questionCount,
       itemBuilder: (context, index) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             _homeViewModel.questionMap.keys.toList()[index],
@@ -68,9 +72,6 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
                 fontStyle: FontStyle.normal,
                 fontSize: 20.0),
             textAlign: TextAlign.left,
-          ),
-          Container(
-            height: 150,
           ),
         ],
       ),

@@ -29,6 +29,7 @@ dependencies:
   flutter_dotenv: ^4.0.0-nullsafety.1
   flutter_mobx: ^2.0.0
   flutter_svg: ^0.22.0
+  group_button: ^2.1.2
   http: ^0.13.3
   json_annotation: ^4.0.1
   json_serializable: ^4.1.2

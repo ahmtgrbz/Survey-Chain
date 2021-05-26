@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart';
+import 'package:survey_chain/core/constants/navigation_constants.dart';
+import 'package:survey_chain/core/navigation/navigation_service.dart';
 import 'package:survey_chain/feature/home_view/viewmodel/home_view_model.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
@@ -23,7 +25,6 @@ final _homeViewModel = HomeViewModel(
 class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -60,7 +61,10 @@ class HomeView extends StatelessWidget {
       itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              NavigationService.instance
+                  .navigateToPage(path: NavigationConstants.SURVEY_DETAIL);
+            },
             child: Card(
               child: ListTile(
                 leading: FlutterLogo(),
