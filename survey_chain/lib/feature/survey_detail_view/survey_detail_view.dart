@@ -5,7 +5,6 @@ import 'package:web3dart/web3dart.dart';
 
 import '../home_view/service/ethereum_chain_service.dart';
 import '../home_view/viewmodel/home_view_model.dart';
-import 'viewmodel/survey_detail_view_model.dart';
 
 var httpClt = Client();
 var infura = DotEnv.env["INFURA"];
@@ -20,8 +19,6 @@ final _homeViewModel = HomeViewModel(
   ),
 );
 
-final _surveyDetailViewModel = SurveyDataViewModel();
-
 class SurveyDetailView extends StatefulWidget {
   final surveyData;
 
@@ -35,13 +32,29 @@ class SurveyDetailView extends StatefulWidget {
 }
 
 class _SurveyDetailViewState extends State<SurveyDetailView> {
+  List<String> selectedAnswers = [];
+
+  void answersDefaulter(List<String> list) {
+    for (var i = 0; i < widget.surveyData[0].questions.length; i++) {
+      selectedAnswers.add('');
+    }
+  }
+
+  @override
+  void initState() {
+    answersDefaulter(selectedAnswers);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              print(selectedAnswers);
+            },
             icon: Icon(Icons.data_saver_off),
           ),
         ],
@@ -60,53 +73,88 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
     );
   }
 
-  ListView buildListViewBody() {
-    return ListView.builder(
-      itemCount: widget.surveyData[0].questions.length,
-      itemBuilder: (context, index1) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.surveyData[1][index1].title,
-              style: const TextStyle(
-                  color: const Color(0xff221c43),
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Roboto",
-                  fontStyle: FontStyle.normal,
-                  fontSize: 20.0),
-              textAlign: TextAlign.left,
-            ),
-            SizedBox(height: 20),
-            Container(
-              height: 200,
-              width: double.infinity,
-              child: ListView.builder(
-                itemCount: widget.surveyData[1][index1].answers.length,
-                itemBuilder: (context, index) {
-                  return RadioListTile<String>(
-                    title: Text(
-                      widget.surveyData[1][index1].answers[index].toString(),
-                    ),
-                    value:
-                        widget.surveyData[1][index1].answers[index].toString(),
-                    groupValue: widget.surveyData[1][index1].selectedAnswer,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          widget.surveyData[1][index1].selectedAnswer =
-                              value.toString();
-                          print(widget.surveyData[1][index1].selectedAnswer);
+  Stack buildListViewBody() {
+    return Stack(
+      children: [
+        ListView.builder(
+          itemCount: widget.surveyData[0].questions.length,
+          itemBuilder: (context, index1) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.surveyData[1][index1].title,
+                  style: const TextStyle(
+                      color: const Color(0xff221c43),
+                      fontWeight: FontWeight.w500,
+                      fontFamily: "Roboto",
+                      fontStyle: FontStyle.normal,
+                      fontSize: 20.0),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(height: 20),
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: widget.surveyData[1][index1].answers.length,
+                    itemBuilder: (context, index) {
+                      return RadioListTile<String>(
+                        title: Text(
+                          widget.surveyData[1][index1].answers[index]
+                              .toString(),
+                        ),
+                        value: widget.surveyData[1][index1].answers[index]
+                            .toString(),
+                        groupValue: widget.surveyData[1][index1].selectedAnswer,
+                        onChanged: (value) {
+                          setState(
+                            () {
+                              widget.surveyData[1][index1].selectedAnswer =
+                                  value.toString();
+                              selectedAnswers[index1] = value.toString();
+                            },
+                          );
                         },
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        Positioned(
+          left: (MediaQuery.of(context).size.width - 260) / 2,
+          bottom: (MediaQuery.of(context).size.height - 56) / 20,
+          child: InkWell(
+            onTap: () async {
+              if (!selectedAnswers.contains('')) {
+                await _homeViewModel.service.joinTheSurvey(
+                    BigInt.from(widget.surveyData[2]), selectedAnswers);
+              } else {
+                print('Please fill all qustions!');
+              }
+            },
+            child: Container(
+                child: Center(
+                  child: Text("Submit",
+                      style: const TextStyle(
+                          color: const Color(0xff221c43),
+                          fontWeight: FontWeight.w700,
+                          fontFamily: "Roboto",
+                          fontStyle: FontStyle.normal,
+                          fontSize: 20.0),
+                      textAlign: TextAlign.center),
+                ),
+                width: 260,
+                height: 56,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    color: const Color(0xffe1b000))),
+          ),
+        )
+      ],
     );
   }
 }

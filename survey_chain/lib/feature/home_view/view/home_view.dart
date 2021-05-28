@@ -6,8 +6,6 @@ import 'package:web3dart/web3dart.dart';
 
 import '../../../core/constants/navigation_constants.dart';
 import '../../../core/navigation/navigation_service.dart';
-import '../../survey_detail_view/model/survey_model.dart';
-import '../../survey_detail_view/viewmodel/survey_detail_view_model.dart';
 import '../service/ethereum_chain_service.dart';
 import '../viewmodel/home_view_model.dart';
 
@@ -23,8 +21,6 @@ final _homeViewModel = HomeViewModel(
     httpClt,
   ),
 );
-
-final _surveyDetailViewModel = SurveyDataViewModel();
 
 class HomeView extends StatelessWidget {
   final participantModel;
@@ -80,7 +76,7 @@ class HomeView extends StatelessWidget {
             print(data);
             await NavigationService.instance.navigateToPage(
                 path: NavigationConstants.SURVEY_DETAIL,
-                data: [_homeViewModel.surveyList[index], data]);
+                data: [_homeViewModel.surveyList[index], data, index]);
           },
           child: Card(
             child: ListTile(

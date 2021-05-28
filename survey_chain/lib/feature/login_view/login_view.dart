@@ -80,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                 keyboardType: TextInputType.name,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    'Name can not be empty';
+                    return 'Name can not be empty';
                   } else {
                     participantModel.name = value;
                     print(participantModel.name);
@@ -124,7 +124,7 @@ class _LoginViewState extends State<LoginView> {
                     participantModel.age = BigInt.from(val);
                     print(participantModel.age);
                   } else {
-                    'Enter valid an age!';
+                    return 'Enter valid an age!';
                   }
                 },
                 decoration: InputDecoration(

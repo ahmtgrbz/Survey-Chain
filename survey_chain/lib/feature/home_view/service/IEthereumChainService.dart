@@ -19,4 +19,5 @@ abstract class IEthereumChainService {
   Future<int>? getSurveyCount();
   Future<QuestionModel?>? getQuestion(int id);
   Future<int>? getQuestionCount();
+  Future<void> joinTheSurvey(BigInt surveyId, List<String> selectedAnswers);
 }

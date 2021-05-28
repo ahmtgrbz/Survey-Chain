@@ -117,4 +117,11 @@ class EthereumChainService extends IEthereumChainService {
     }
     throw Exception(); // ERROR
   }
+
+  @override
+  Future<void> joinTheSurvey(
+      BigInt surveyId, List<String> selectedAnswers) async {
+    var result = await submit('joinTheSurvey', [surveyId, selectedAnswers]);
+    print(result);
+  }
 }
