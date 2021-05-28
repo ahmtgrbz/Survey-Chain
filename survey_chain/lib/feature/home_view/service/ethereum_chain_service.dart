@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:http/http.dart';
+import 'package:survey_chain/feature/survey_detail_view/model/question_model.dart';
+import 'package:survey_chain/feature/survey_detail_view/model/survey_model.dart';
 import 'package:web3dart/contracts.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -31,7 +33,6 @@ class EthereumChainService extends IEthereumChainService {
         Transaction.callContract(
             contract: contract, function: ethFunction, parameters: args),
         chainId: 3,
-        //fetchChainIdFromNetworkId: true,
       );
       return result;
     } else {
@@ -67,23 +68,34 @@ class EthereumChainService extends IEthereumChainService {
   }
 
   @override
-  Future<List?>? getSurvey(int id) async {
+  Future<SurveyModel>? getSurvey(int id) async {
     var result = await query('getSurvey', [BigInt.from(id)]);
 
     if (result != null) {
-      return result;
+      if (result is List) {
+        for (var item in result[1]) {
+          if (item != null) {
+            if (item is BigInt) {
+              item = item.toInt();
+            }
+          }
+        }
+        return SurveyModel(name: result[0], questions: result[1]);
+      }
     }
-    throw Exception();
+    return SurveyModel(name: 'Error', questions: []);
   }
 
   @override
-  Future<List<dynamic>?>? getQuestion(int id) async {
-    var result = await query('getQuestion', [BigInt.from(id)]);
+  Future<QuestionModel>? getQuestion(int id) async {
+    List<dynamic>? result = await query('getQuestion', [BigInt.from(id)]);
 
     if (result != null) {
-      return result;
+      if (result is List) {
+        return QuestionModel(title: result[0], answers: result[1]);
+      }
     }
-    throw Exception();
+    return QuestionModel(title: 'Error', answers: []);
   }
 
   @override

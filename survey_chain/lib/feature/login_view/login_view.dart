@@ -36,8 +36,6 @@ class _LoginViewState extends State<LoginView> {
 
   ParticipantModel participantModel =
       ParticipantModel(name: '', age: BigInt.from(0));
-  String _userName = '';
-  late BigInt _userAge;
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +156,8 @@ class _LoginViewState extends State<LoginView> {
                   await _homeViewModel.service.createParticipant(
                       participantModel.name ?? '',
                       participantModel.age ?? BigInt.from(0));
-                  NavigationService.instance.navigateToPage(
+
+                  await NavigationService.instance.navigateToPage(
                     path: NavigationConstants.HOME_VIEW,
                     data: participantModel,
                   );
