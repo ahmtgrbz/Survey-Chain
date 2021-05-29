@@ -76,6 +76,7 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 controller: _nameController,
                 keyboardType: TextInputType.name,
                 validator: (value) {
@@ -114,6 +115,7 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 controller: _ageController,
                 keyboardType: TextInputType.number,
                 validator: (value) {

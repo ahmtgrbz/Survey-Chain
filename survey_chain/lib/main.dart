@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      initialRoute: NavigationConstants.HOME_VIEW,
+      debugShowCheckedModeBanner: false,
+      initialRoute: NavigationConstants.ONBOARD_VIEW,
       navigatorKey: NavigationService.instance.navigatorKey,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
     );

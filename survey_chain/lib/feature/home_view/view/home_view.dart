@@ -80,7 +80,9 @@ class HomeView extends StatelessWidget {
           },
           child: Card(
             child: ListTile(
-              leading: FlutterLogo(),
+              leading: FlutterLogo(
+                curve: Curves.bounceInOut,
+              ),
               title: Text(_homeViewModel.surveyList[index].name.toString()),
               subtitle: Text('Question Count: ' +
                   _homeViewModel.surveyList[index].questions!.length
