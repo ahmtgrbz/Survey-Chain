@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:http/http.dart';
+import 'package:survey_chain/core/navigation/navigation_service.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../home_view/service/ethereum_chain_service.dart';
@@ -76,53 +77,83 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
   Stack buildListViewBody() {
     return Stack(
       children: [
-        ListView.builder(
-          itemCount: widget.surveyData[0].questions.length,
-          itemBuilder: (context, index1) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.surveyData[1][index1].title,
-                  style: const TextStyle(
-                      color: const Color(0xff221c43),
-                      fontWeight: FontWeight.w500,
-                      fontFamily: "Roboto",
-                      fontStyle: FontStyle.normal,
-                      fontSize: 20.0),
-                  textAlign: TextAlign.left,
-                ),
-                SizedBox(height: 20),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  child: ListView.builder(
-                    itemCount: widget.surveyData[1][index1].answers.length,
-                    itemBuilder: (context, index) {
-                      return RadioListTile<String>(
-                        title: Text(
-                          widget.surveyData[1][index1].answers[index]
-                              .toString(),
-                        ),
-                        value: widget.surveyData[1][index1].answers[index]
-                            .toString(),
-                        groupValue: widget.surveyData[1][index1].selectedAnswer,
-                        onChanged: (value) {
-                          setState(
-                            () {
-                              widget.surveyData[1][index1].selectedAnswer =
-                                  value.toString();
-                              selectedAnswers[index1] = value.toString();
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: ListView.builder(
+            itemCount: widget.surveyData[0].questions.length,
+            itemBuilder: (context, index1) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: Text(
+                      widget.surveyData[1][index1].title,
+                      style: const TextStyle(
+                          color: const Color(0xff221c43),
+                          fontWeight: FontWeight.w500,
+                          fontFamily: "Roboto",
+                          fontStyle: FontStyle.normal,
+                          fontSize: 20.0),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    height:
+                        (50.0 * widget.surveyData[1][index1].answers.length),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      boxShadow: [
+                        BoxShadow(
+                            color: const Color(0x40000000),
+                            offset: Offset(0, 4),
+                            blurRadius: 20,
+                            spreadRadius: 0)
+                      ],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    child: Center(
+                      child: ListView.builder(
+                        itemCount: widget.surveyData[1][index1].answers.length,
+                        itemBuilder: (context, index) {
+                          return RadioListTile<String>(
+                            activeColor: Color(0xffe1b000),
+                            title: Text(
+                              widget.surveyData[1][index1].answers[index]
+                                  .toString(),
+                              style: TextStyle(
+                                  color: const Color(0xff221c43),
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: "Roboto",
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 20.0),
+                            ),
+                            value: widget.surveyData[1][index1].answers[index]
+                                .toString(),
+                            groupValue:
+                                widget.surveyData[1][index1].selectedAnswer,
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  widget.surveyData[1][index1].selectedAnswer =
+                                      value.toString();
+                                  selectedAnswers[index1] = value.toString();
+                                },
+                              );
                             },
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
         Positioned(
           left: (MediaQuery.of(context).size.width - 260) / 2,
@@ -135,6 +166,7 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
               } else {
                 print('Please fill all qustions!');
               }
+              NavigationService.instance.navigateToPop();
             },
             child: Container(
                 child: Center(
