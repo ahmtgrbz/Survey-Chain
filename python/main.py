@@ -14,6 +14,11 @@ contract = web3.eth.contract(address=address, abi=abi)
 
 def participantCount():
     print(contract.functions.getParticipantCount().call())
+    
+def createParticipant(name, age):
+    tx_hash = contract.functions.createParticipant(name, age).transact()
+    web3.eth.waitForTransactionReceipt(tx_hash)
+    print("Kullanıcı Oluşturuldu!")
 
 def main():
     while True:
@@ -28,6 +33,10 @@ def main():
             break
         elif(deger == 1):
             participantCount()
+        elif(deger == 2):
+            name = input("Lütfen isminizi giriniz: ")
+            age = int(input("Lütfen yaşınızı giriniz: "))
+            createParticipant(name, age)
         
 
 if "__main__" == __name__:
