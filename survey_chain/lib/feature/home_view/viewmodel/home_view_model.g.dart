@@ -39,33 +39,18 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
     });
   }
 
-  final _$surveyMapAtom = Atom(name: '_HomeViewModelBase.surveyMap');
+  final _$surveyListAtom = Atom(name: '_HomeViewModelBase.surveyList');
 
   @override
-  Map<String, List<dynamic>> get surveyMap {
-    _$surveyMapAtom.reportRead();
-    return super.surveyMap;
+  List<SurveyModel> get surveyList {
+    _$surveyListAtom.reportRead();
+    return super.surveyList;
   }
 
   @override
-  set surveyMap(Map<String, List<dynamic>> value) {
-    _$surveyMapAtom.reportWrite(value, super.surveyMap, () {
-      super.surveyMap = value;
-    });
-  }
-
-  final _$questionMapAtom = Atom(name: '_HomeViewModelBase.questionMap');
-
-  @override
-  Map<String, List<dynamic>> get questionMap {
-    _$questionMapAtom.reportRead();
-    return super.questionMap;
-  }
-
-  @override
-  set questionMap(Map<String, List<dynamic>> value) {
-    _$questionMapAtom.reportWrite(value, super.questionMap, () {
-      super.questionMap = value;
+  set surveyList(List<SurveyModel> value) {
+    _$surveyListAtom.reportWrite(value, super.surveyList, () {
+      super.surveyList = value;
     });
   }
 
@@ -96,8 +81,7 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
     return '''
 surveyCount: ${surveyCount},
 questionCount: ${questionCount},
-surveyMap: ${surveyMap},
-questionMap: ${questionMap},
+surveyList: ${surveyList},
 isLoading: ${isLoading}
     ''';
   }

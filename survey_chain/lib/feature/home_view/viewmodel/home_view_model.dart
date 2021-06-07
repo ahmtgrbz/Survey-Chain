@@ -1,6 +1,8 @@
 import 'package:mobx/mobx.dart';
 
 import 'package:survey_chain/feature/home_view/service/IEthereumChainService.dart';
+import 'package:survey_chain/feature/survey_detail_view/model/question_model.dart';
+import 'package:survey_chain/feature/survey_detail_view/model/survey_model.dart';
 
 part 'home_view_model.g.dart';
 
@@ -16,10 +18,7 @@ abstract class _HomeViewModelBase with Store {
   int questionCount = 0;
 
   @observable
-  Map<String, List> surveyMap = {};
-
-  @observable
-  Map<String, List<dynamic>> questionMap = {};
+  List<SurveyModel> surveyList = [];
 
   @observable
   bool isLoading = true;
@@ -37,15 +36,22 @@ abstract class _HomeViewModelBase with Store {
 
     for (var i = 0; i < surveyCount; i++) {
       var survey = (await service.getSurvey(i))!;
-      surveyMap.putIfAbsent(survey[0], () => survey[1]);
+      surveyList.add(survey);
     }
 
-    for (var i = 0; i < questionCount; i++) {
-      var question = (await service.getQuestion(i))!;
-      questionMap.putIfAbsent(question[0], () => question[1]);
-    }
     isLoading = false;
-    print(questionMap.toString());
-    print(surveyMap.toString());
+  }
+
+  Future<List<QuestionModel>> surveyToQuestions(SurveyModel surveyModel) async {
+    List<QuestionModel> list = [];
+    for (var item in surveyModel.questions!) {
+      var question = await service.getQuestion(item.toInt());
+      if (question != null) {
+        list.add(question);
+      } else {
+        print('Question Null Geldi');
+      }
+    }
+    return list;
   }
 }

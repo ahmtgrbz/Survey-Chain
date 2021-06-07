@@ -36,8 +36,6 @@ class _LoginViewState extends State<LoginView> {
 
   ParticipantModel participantModel =
       ParticipantModel(name: '', age: BigInt.from(0));
-  String _userName = '';
-  late BigInt _userAge;
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +76,12 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 controller: _nameController,
                 keyboardType: TextInputType.name,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    'Name can not be empty';
+                    return 'Name can not be empty';
                   } else {
                     participantModel.name = value;
                     print(participantModel.name);
@@ -116,6 +115,7 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 65.0),
               child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 controller: _ageController,
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -126,7 +126,7 @@ class _LoginViewState extends State<LoginView> {
                     participantModel.age = BigInt.from(val);
                     print(participantModel.age);
                   } else {
-                    'Enter valid an age!';
+                    return 'Enter valid an age!';
                   }
                 },
                 decoration: InputDecoration(
@@ -158,7 +158,8 @@ class _LoginViewState extends State<LoginView> {
                   await _homeViewModel.service.createParticipant(
                       participantModel.name ?? '',
                       participantModel.age ?? BigInt.from(0));
-                  NavigationService.instance.navigateToPage(
+
+                  await NavigationService.instance.navigateToPage(
                     path: NavigationConstants.HOME_VIEW,
                     data: participantModel,
                   );

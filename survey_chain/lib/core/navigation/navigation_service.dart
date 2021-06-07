@@ -12,6 +12,11 @@ class NavigationService implements INavigationService {
   final removeAllOldRoutes = (Route<dynamic> route) => false;
 
   @override
+  void navigateToPop() {
+    navigatorKey.currentState!.pop();
+  }
+
+  @override
   Future<void> navigateToPage({String? path, Object? data}) async {
     await navigatorKey.currentState!.pushNamed(path!, arguments: data);
   }
