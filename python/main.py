@@ -14,7 +14,6 @@ contract = web3.eth.contract(address=address, abi=abi)
 
 
 
-
 def main():
     while True:
         print("""
@@ -27,12 +26,16 @@ def main():
 
         if(deger == 0):
             break
+            
         elif(deger == 1):
-            Participant.participantCount(contract)
+            participant = Participant(web3, contract)
+            participant.participantCount()
+
         elif(deger == 2):
             name = input("Lütfen isminizi giriniz: ")
             age = int(input("Lütfen yaşınızı giriniz: "))
-            Participant.createParticipant(web3, contract, name, age)
+            participant = Participant(web3, contract)
+            participant.createParticipant(name, age)
 
 if "__main__" == __name__:
     main()
