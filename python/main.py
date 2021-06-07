@@ -21,6 +21,7 @@ def main():
         1- Kaç Kullanıcı Olduğunu Öğren
         2- Kullanıcı Oluştur
         3- Kaç Anket Olduğunu Öğren
+        4- Anket Oluştur
         0- Çıkış
         """)
 
@@ -40,6 +41,10 @@ def main():
         elif(deger == 3):
             survey = Survey(web3, contract)
             survey.getSurveyCount()
+            
+        elif (deger == 4):
+            survey = Survey(web3, contract)
+            survey.createSurvey(survey)   
 
 if "__main__" == __name__:
     main()
