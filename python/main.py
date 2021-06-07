@@ -11,8 +11,27 @@ abi = json.loads("abi")
 address = "contract address"
 contract = web3.eth.contract(address=address, abi=abi)
 
-if "__main__" == __name__:
+
+def participantCount():
     print(contract.functions.getParticipantCount().call())
+
+def main():
+    while True:
+        print("""
+        1- Kaç Kullanıcı Olduğunu Öğren
+        0- Çıkış
+        """)
+
+        deger = int(input("Hangi işlemi yapmak istediğinizi seçin: "))
+
+        if(deger == 0):
+            break
+        elif(deger == 1):
+            participantCount()
+        
+
+if "__main__" == __name__:
+    main()
 
 
 
