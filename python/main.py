@@ -1,6 +1,7 @@
 from web3 import Web3
 import json
 from participant.participant import Participant
+from survey.survey import Survey
 
 # Web3 Settings
 ganache_url = "#"
@@ -19,6 +20,7 @@ def main():
         print("""
         1- Kaç Kullanıcı Olduğunu Öğren
         2- Kullanıcı Oluştur
+        3- Kaç Anket Olduğunu Öğren
         0- Çıkış
         """)
 
@@ -34,6 +36,10 @@ def main():
         elif(deger == 2):
             participant = Participant(web3, contract)
             participant.createParticipant()
+        
+        elif(deger == 3):
+            survey = Survey(web3, contract)
+            survey.getSurveyCount()
 
 if "__main__" == __name__:
     main()
