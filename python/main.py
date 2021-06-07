@@ -32,10 +32,8 @@ def main():
             participant.participantCount()
 
         elif(deger == 2):
-            name = input("Lütfen isminizi giriniz: ")
-            age = int(input("Lütfen yaşınızı giriniz: "))
             participant = Participant(web3, contract)
-            participant.createParticipant(name, age)
+            participant.createParticipant()
 
 if "__main__" == __name__:
     main()

@@ -6,7 +6,10 @@ class Participant:
     def participantCount(self):
         print(self.contract.functions.getParticipantCount().call())
 
-    def createParticipant(self, name, age):
+    def createParticipant(self):
+        name = input("Lütfen isminizi giriniz: ")
+        age = int(input("Lütfen yaşınızı giriniz: "))
+
         tx_hash = self.contract.functions.createParticipant(name, age).transact()
         self.web3.eth.waitForTransactionReceipt(tx_hash)
         print("Kullanıcı Oluşturuldu!")
