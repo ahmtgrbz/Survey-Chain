@@ -9,6 +9,11 @@ class Survey:
     def getSurveyCount(self):
         print(self.contract.functions.getSurveyCount().call())
 
+    def getSurveyTitles(self):
+        surveys = self.contract.functions.getAllSurveyTitles().call()
+        for i in range(len(surveys)):
+            print("{}. Anket: {}".format(i+1, surveys[0]))
+
     def createQuestion(self):
         question = input("Soruyu giriniz: ")
         answer = input("Cevapları ',' ile ayırarak giriniz: ").split(",")

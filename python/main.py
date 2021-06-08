@@ -22,7 +22,8 @@ def main():
         2- Kullanıcı Oluştur
         3- Kaç Anket Olduğunu Öğren
         4- Anket Oluştur
-        5 - Tüm Kullanıcıları Göster
+        5- Tüm Kullanıcıları Göster
+        6- Tüm Anketleri Göster
         0- Çıkış
         """)
 
@@ -49,7 +50,11 @@ def main():
 
         elif (deger == 5):
             participant = Participant(web3, contract)
-            participant.getAllParticipant()  
+            participant.getAllParticipant()
+
+        elif (deger == 6):
+            survey = Survey(web3, contract)
+            survey.getSurveyTitles()
 
 if "__main__" == __name__:
     main()
