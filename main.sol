@@ -190,4 +190,8 @@ contract SurveyList {
     function getAllParticipantAddresses() public view returns (address[] memory adresses){
         return participant_list;
     }
+    
+    function getAllSurveyTitles() public view returns (string[] memory titles){
+        return survey_titles;
+    }
 }
