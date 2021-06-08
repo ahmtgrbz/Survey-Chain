@@ -6,7 +6,7 @@ contract SurveyList {
     
     address owner;
     string[] public survey_titles;
-    address[] participant_list;
+    address[] public participant_list;
     
     // These are for our models' ids.
     uint public surveyCount = 0;
@@ -187,4 +187,7 @@ contract SurveyList {
         return questionCount;
     }
     
+    function getAllParticipantAddresses() public view returns (address[] memory adresses){
+        return participant_list;
+    }
 }
