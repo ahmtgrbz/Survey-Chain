@@ -1,8 +1,10 @@
 import 'package:mobx/mobx.dart';
+import 'package:web3dart/credentials.dart';
 
-import 'package:survey_chain/feature/home_view/service/IEthereumChainService.dart';
-import 'package:survey_chain/feature/survey_detail_view/model/question_model.dart';
-import 'package:survey_chain/feature/survey_detail_view/model/survey_model.dart';
+import '../../survey_detail_view/model/question_model.dart';
+import '../../survey_detail_view/model/survey_model.dart';
+import '../model/participant_model.dart';
+import '../service/IEthereumChainService.dart';
 
 part 'home_view_model.g.dart';
 
@@ -21,12 +23,19 @@ abstract class _HomeViewModelBase with Store {
   List<SurveyModel> surveyList = [];
 
   @observable
+  List<BigInt> joinedSurveys = [];
+
+  @observable
   bool isLoading = true;
+
+  @observable
+  late ParticipantModel participantModel;
 
   _HomeViewModelBase({
     required this.service,
   }) {
     getSurveys();
+    getJoinnedSurveys(credentials.address);
   }
 
   @action
@@ -40,6 +49,12 @@ abstract class _HomeViewModelBase with Store {
     }
 
     isLoading = false;
+  }
+
+  Future<void>? getJoinnedSurveys(EthereumAddress address) async {
+    List<BigInt>? surveys = (await service.getJoinedSurveys(address));
+    print('BURDA BURDA');
+    joinedSurveys = surveys ?? [];
   }
 
   Future<List<QuestionModel>> surveyToQuestions(SurveyModel surveyModel) async {

@@ -54,6 +54,21 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
     });
   }
 
+  final _$joinedSurveysAtom = Atom(name: '_HomeViewModelBase.joinedSurveys');
+
+  @override
+  List<BigInt> get joinedSurveys {
+    _$joinedSurveysAtom.reportRead();
+    return super.joinedSurveys;
+  }
+
+  @override
+  set joinedSurveys(List<BigInt> value) {
+    _$joinedSurveysAtom.reportWrite(value, super.joinedSurveys, () {
+      super.joinedSurveys = value;
+    });
+  }
+
   final _$isLoadingAtom = Atom(name: '_HomeViewModelBase.isLoading');
 
   @override
@@ -66,6 +81,22 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
   set isLoading(bool value) {
     _$isLoadingAtom.reportWrite(value, super.isLoading, () {
       super.isLoading = value;
+    });
+  }
+
+  final _$participantModelAtom =
+      Atom(name: '_HomeViewModelBase.participantModel');
+
+  @override
+  ParticipantModel get participantModel {
+    _$participantModelAtom.reportRead();
+    return super.participantModel;
+  }
+
+  @override
+  set participantModel(ParticipantModel value) {
+    _$participantModelAtom.reportWrite(value, super.participantModel, () {
+      super.participantModel = value;
     });
   }
 
@@ -82,7 +113,9 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
 surveyCount: ${surveyCount},
 questionCount: ${questionCount},
 surveyList: ${surveyList},
-isLoading: ${isLoading}
+joinedSurveys: ${joinedSurveys},
+isLoading: ${isLoading},
+participantModel: ${participantModel}
     ''';
   }
 }

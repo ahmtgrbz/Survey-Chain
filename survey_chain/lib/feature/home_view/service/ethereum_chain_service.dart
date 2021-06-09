@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:http/http.dart';
+import 'package:survey_chain/feature/home_view/model/participant_model.dart';
 import 'package:survey_chain/feature/survey_detail_view/model/question_model.dart';
 import 'package:survey_chain/feature/survey_detail_view/model/survey_model.dart';
 import 'package:web3dart/contracts.dart';
@@ -62,7 +63,8 @@ class EthereumChainService extends IEthereumChainService {
   }
 
   @override
-  Future<void> createParticipant(String name, BigInt age) async {
+  Future<void> createParticipant(String name, BigInt age,
+      {EthereumAddress? address, bool? isParticipant}) async {
     var result = await submit('createParticipant', [name, age]);
     print(result);
   }
@@ -123,5 +125,27 @@ class EthereumChainService extends IEthereumChainService {
       BigInt surveyId, List<String> selectedAnswers) async {
     var result = await submit('joinTheSurvey', [surveyId, selectedAnswers]);
     print(result);
+  }
+
+  @override
+  Future<ParticipantModel?>? getParticipant(EthereumAddress address) async {
+    var result = await query('participants', [address]);
+    if (result is List) {
+      return ParticipantModel(
+        name: result[1] ?? '',
+        age: result[2] ?? BigInt.from(0),
+      );
+    }
+    return null;
+  }
+
+  @override
+  Future<List<BigInt>?>? getJoinedSurveys(EthereumAddress address) async {
+    var result = await query('participantsJoinedSurveys', [address]);
+    if (result is List<BigInt>) {
+      print('ASD');
+      return result;
+    }
+    return null;
   }
 }

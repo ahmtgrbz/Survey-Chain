@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:survey_chain/core/navigation/navigation_service.dart';
+import 'package:survey_chain/feature/survey_detail_view/viewmodel/survey_detail_view_model.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../home_view/service/ethereum_chain_service.dart';
@@ -19,6 +21,8 @@ final _homeViewModel = HomeViewModel(
     httpClt,
   ),
 );
+
+final _surveyViewModel = SurveyDataViewModel();
 
 class SurveyDetailView extends StatefulWidget {
   final surveyData;
@@ -41,10 +45,56 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
     }
   }
 
+  var fToast = FToast();
   @override
   void initState() {
     answersDefaulter(selectedAnswers);
     super.initState();
+    fToast.init(context);
+  }
+
+  void buildShowToastJoinedSurveySuccess(FToast fToast, BuildContext context) {
+    return fToast.showToast(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          'Survey joined succesfully.',
+          style: Theme.of(context)
+              .textTheme
+              .headline6!
+              .copyWith(color: Colors.white, fontSize: 18),
+        ),
+      ),
+    );
+  }
+
+  void buildShowToastJoinedSurveyError(FToast fToast, BuildContext context) {
+    return fToast.showToast(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          'Fill all questions.',
+          style: Theme.of(context)
+              .textTheme
+              .headline6!
+              .copyWith(color: Colors.white, fontSize: 18),
+        ),
+      ),
+    );
   }
 
   @override
@@ -163,8 +213,12 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
               if (!selectedAnswers.contains('')) {
                 await _homeViewModel.service.joinTheSurvey(
                     BigInt.from(widget.surveyData[2]), selectedAnswers);
+                buildShowToastJoinedSurveySuccess(fToast, context);
+                _homeViewModel.joinedSurveys
+                    .add(BigInt.from(widget.surveyData[2]));
               } else {
                 print('Please fill all qustions!');
+                buildShowToastJoinedSurveyError(fToast, context);
               }
               NavigationService.instance.navigateToPop();
             },

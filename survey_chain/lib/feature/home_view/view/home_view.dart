@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -22,10 +23,27 @@ final _homeViewModel = HomeViewModel(
   ),
 );
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   final participantModel;
 
   const HomeView({Key? key, this.participantModel}) : super(key: key);
+
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  var fToast = FToast();
+
+  String? metamaskPrivateKey = DotEnv.env['METAMASK'];
+  late EthPrivateKey credentials;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fToast.init(context);
+    credentials = EthPrivateKey.fromHex(metamaskPrivateKey!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +52,7 @@ class HomeView extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              print(participantModel.name);
+              print(_homeViewModel.joinedSurveys.toString());
             },
             icon: Icon(Icons.account_box_outlined),
           )
@@ -71,25 +89,67 @@ class HomeView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
         child: InkWell(
           onTap: () async {
-            var data = await _homeViewModel
-                .surveyToQuestions(_homeViewModel.surveyList[index]);
-            print(data);
-            await NavigationService.instance.navigateToPage(
-                path: NavigationConstants.SURVEY_DETAIL,
-                data: [_homeViewModel.surveyList[index], data, index]);
+            var value = BigInt.from(index);
+            if (_homeViewModel.joinedSurveys.contains(value)) {
+              print('HEHE');
+            } else {
+              var data = await _homeViewModel
+                  .surveyToQuestions(_homeViewModel.surveyList[index]);
+              print(data);
+              await NavigationService.instance.navigateToPage(
+                  path: NavigationConstants.SURVEY_DETAIL,
+                  data: [_homeViewModel.surveyList[index], data, index]);
+            }
           },
-          child: Card(
-            child: ListTile(
-              leading: FlutterLogo(
-                curve: Curves.bounceInOut,
-              ),
-              title: Text(_homeViewModel.surveyList[index].name.toString()),
-              subtitle: Text('Question Count: ' +
-                  _homeViewModel.surveyList[index].questions!.length
-                      .toString()),
-            ),
+          child: SurveyCard(
+            index: index,
           ),
         ),
+      ),
+    );
+  }
+
+  void buildShowToastAlreadyJoinedSurvey(FToast fToast, BuildContext context) {
+    return fToast.showToast(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          'You already joined the survey!',
+          style: Theme.of(context)
+              .textTheme
+              .headline6!
+              .copyWith(color: Colors.white, fontSize: 18),
+        ),
+      ),
+    );
+  }
+}
+
+class SurveyCard extends StatelessWidget {
+  final index;
+
+  const SurveyCard({
+    Key? key,
+    this.index,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: FlutterLogo(
+          curve: Curves.bounceInOut,
+        ),
+        title: Text(_homeViewModel.surveyList[index].name.toString()),
+        subtitle: Text('Question Count: ' +
+            _homeViewModel.surveyList[index].questions!.length.toString()),
       ),
     );
   }
