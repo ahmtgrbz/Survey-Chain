@@ -3,10 +3,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../../../core/constants/navigation_constants.dart';
 import '../../../core/navigation/navigation_service.dart';
+import '../../survey_detail_view/viewmodel/survey_detail_view_model.dart';
 import '../service/ethereum_chain_service.dart';
 import '../viewmodel/home_view_model.dart';
 
@@ -22,6 +24,8 @@ final _homeViewModel = HomeViewModel(
     httpClt,
   ),
 );
+
+final _surveyViewModel = SurveyDataViewModel();
 
 class HomeView extends StatefulWidget {
   final participantModel;
@@ -39,7 +43,6 @@ class _HomeViewState extends State<HomeView> {
   late EthPrivateKey credentials;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fToast.init(context);
     credentials = EthPrivateKey.fromHex(metamaskPrivateKey!);
@@ -51,10 +54,12 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              print(_homeViewModel.joinedSurveys.toString());
+            onPressed: () async {
+              //await _homeViewModel.getJoinnedSurveys(credentials.address);
+              //NavigationService.instance
+              //    .navigateToPageClear(path: NavigationConstants.LOGIN_VIEW);
             },
-            icon: Icon(Icons.account_box_outlined),
+            icon: Icon(Icons.exit_to_app),
           )
         ],
         elevation: 0,
@@ -144,13 +149,37 @@ class SurveyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: FlutterLogo(
-          curve: Curves.bounceInOut,
-        ),
-        title: Text(_homeViewModel.surveyList[index].name.toString()),
-        subtitle: Text('Question Count: ' +
-            _homeViewModel.surveyList[index].questions!.length.toString()),
-      ),
+          leading: FlutterLogo(
+            curve: Curves.bounceInOut,
+          ),
+          title: Row(
+            children: [
+              Text(
+                _homeViewModel.surveyList[index].name!,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6!
+                    .copyWith(color: Colors.black, fontSize: 16),
+              ),
+              Spacer(),
+              Text(
+                _homeViewModel.surveyList[index].questions!.length.toString() +
+                    ' Questions',
+                style: Theme.of(context)
+                    .textTheme
+                    .overline!
+                    .copyWith(color: Colors.black),
+              ),
+            ],
+          ),
+          subtitle: Observer(builder: (_) {
+            return StepProgressIndicator(
+              totalSteps: _homeViewModel.surveyList[index].questions!.length,
+              currentStep: 0,
+              selectedColor: Colors.blue,
+              unselectedColor: Colors.grey.shade400,
+            );
+          })),
     );
   }
 }

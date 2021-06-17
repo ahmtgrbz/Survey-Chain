@@ -25,5 +25,4 @@ abstract class IEthereumChainService {
   Future<int>? getQuestionCount();
   Future<void> joinTheSurvey(BigInt surveyId, List<String> selectedAnswers);
   Future<ParticipantModel?>? getParticipant(EthereumAddress address);
-  Future<List<BigInt>?>? getJoinedSurveys(EthereumAddress address);
 }

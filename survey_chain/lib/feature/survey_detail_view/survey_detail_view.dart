@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:survey_chain/core/navigation/navigation_service.dart';
-import 'package:survey_chain/feature/survey_detail_view/viewmodel/survey_detail_view_model.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../../core/constants/navigation_constants.dart';
+import '../../core/navigation/navigation_service.dart';
 import '../home_view/service/ethereum_chain_service.dart';
 import '../home_view/viewmodel/home_view_model.dart';
+import 'viewmodel/survey_detail_view_model.dart';
 
 var httpClt = Client();
 var infura = DotEnv.env["INFURA"];
@@ -40,6 +41,7 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
   List<String> selectedAnswers = [];
 
   void answersDefaulter(List<String> list) {
+    list.clear();
     for (var i = 0; i < widget.surveyData[0].questions.length; i++) {
       selectedAnswers.add('');
     }
@@ -48,7 +50,9 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
   var fToast = FToast();
   @override
   void initState() {
-    answersDefaulter(selectedAnswers);
+    if (selectedAnswers.length == 0) {
+      answersDefaulter(selectedAnswers);
+    }
     super.initState();
     fToast.init(context);
   }
@@ -75,7 +79,8 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
     );
   }
 
-  void buildShowToastJoinedSurveyError(FToast fToast, BuildContext context) {
+  void buildShowToastJoinedSurveyFillError(
+      FToast fToast, BuildContext context) {
     return fToast.showToast(
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -83,11 +88,34 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
           vertical: 10,
         ),
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: Colors.red,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
-          'Fill all questions.',
+          'Please fill all the questions.',
+          style: Theme.of(context)
+              .textTheme
+              .headline6!
+              .copyWith(color: Colors.white, fontSize: 18),
+        ),
+      ),
+    );
+  }
+
+  void buildShowToastJoinedSurveyDuplicateError(
+      FToast fToast, BuildContext context) {
+    return fToast.showToast(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          'You already joined the survey!',
           style: Theme.of(context)
               .textTheme
               .headline6!
@@ -101,14 +129,15 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
+        leading: IconButton(
             onPressed: () {
-              print(selectedAnswers);
+              _homeViewModel.currentSelectedCount[widget.surveyData[2]] =
+                  _homeViewModel.getSelectedAnswer(selectedAnswers);
+              print(_homeViewModel.currentSelectedCount.toString());
+              NavigationService.instance
+                  .navigateToPage(path: NavigationConstants.HOME_VIEW);
             },
-            icon: Icon(Icons.data_saver_off),
-          ),
-        ],
+            icon: Icon(Icons.arrow_back)),
         centerTitle: true,
         backgroundColor: Color(0xff221c43),
         title: Text(widget.surveyData[0].name,
@@ -151,7 +180,7 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
                   SizedBox(height: 20),
                   Container(
                     height:
-                        (50.0 * widget.surveyData[1][index1].answers.length),
+                        (55.0 * widget.surveyData[1][index1].answers.length),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Color(0xffffffff),
@@ -192,6 +221,8 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
                                   widget.surveyData[1][index1].selectedAnswer =
                                       value.toString();
                                   selectedAnswers[index1] = value.toString();
+                                  print(value);
+                                  print(selectedAnswers);
                                 },
                               );
                             },
@@ -214,13 +245,22 @@ class _SurveyDetailViewState extends State<SurveyDetailView> {
                 await _homeViewModel.service.joinTheSurvey(
                     BigInt.from(widget.surveyData[2]), selectedAnswers);
                 buildShowToastJoinedSurveySuccess(fToast, context);
-                _homeViewModel.joinedSurveys
-                    .add(BigInt.from(widget.surveyData[2]));
               } else {
-                print('Please fill all qustions!');
-                buildShowToastJoinedSurveyError(fToast, context);
+                buildShowToastJoinedSurveyFillError(fToast, context);
               }
-              NavigationService.instance.navigateToPop();
+              /*try {
+                if (!selectedAnswers.contains('')) {
+                  await _homeViewModel.service.joinTheSurvey(
+                      BigInt.from(widget.surveyData[2]), selectedAnswers);
+                  buildShowToastJoinedSurveySuccess(fToast, context);
+                  NavigationService.instance.navigateToPop();
+                } else {
+                  buildShowToastJoinedSurveyFillError(fToast, context);
+                }
+              } catch (e) {
+                //buildShowToastJoinedSurveySuccess(fToast, context);
+                buildShowToastJoinedSurveyDuplicateError(fToast, context);
+              }*/
             },
             child: Container(
                 child: Center(

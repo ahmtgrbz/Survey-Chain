@@ -4,11 +4,15 @@ import 'package:web3dart/credentials.dart';
 import '../../survey_detail_view/model/question_model.dart';
 import '../../survey_detail_view/model/survey_model.dart';
 import '../model/participant_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import '../service/IEthereumChainService.dart';
 
 part 'home_view_model.g.dart';
 
 class HomeViewModel = _HomeViewModelBase with _$HomeViewModel;
+
+String? metamask = DotEnv.env['METAMASK'];
+EthPrivateKey? credentialsData = EthPrivateKey.fromHex(metamask!);
 
 abstract class _HomeViewModelBase with Store {
   IEthereumChainService service;
@@ -35,7 +39,7 @@ abstract class _HomeViewModelBase with Store {
     required this.service,
   }) {
     getSurveys();
-    getJoinnedSurveys(credentials.address);
+    //getJoinnedSurveys(credentialsData!.address);
   }
 
   @action
@@ -51,10 +55,14 @@ abstract class _HomeViewModelBase with Store {
     isLoading = false;
   }
 
-  Future<void>? getJoinnedSurveys(EthereumAddress address) async {
-    List<BigInt>? surveys = (await service.getJoinedSurveys(address));
-    print('BURDA BURDA');
-    joinedSurveys = surveys ?? [];
+  @observable
+  Map<int, int> currentSelectedCount = {};
+
+  @action
+  int getSelectedAnswer(List<String> list) {
+    int currentSelectedValue = 0;
+    list.forEach((element) => element == '' ? null : currentSelectedValue++);
+    return currentSelectedValue;
   }
 
   Future<List<QuestionModel>> surveyToQuestions(SurveyModel surveyModel) async {

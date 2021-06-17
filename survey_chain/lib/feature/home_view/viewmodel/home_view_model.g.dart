@@ -100,11 +100,42 @@ mixin _$HomeViewModel on _HomeViewModelBase, Store {
     });
   }
 
+  final _$currentSelectedCountAtom =
+      Atom(name: '_HomeViewModelBase.currentSelectedCount');
+
+  @override
+  Map<int, int> get currentSelectedCount {
+    _$currentSelectedCountAtom.reportRead();
+    return super.currentSelectedCount;
+  }
+
+  @override
+  set currentSelectedCount(Map<int, int> value) {
+    _$currentSelectedCountAtom.reportWrite(value, super.currentSelectedCount,
+        () {
+      super.currentSelectedCount = value;
+    });
+  }
+
   final _$getSurveysAsyncAction = AsyncAction('_HomeViewModelBase.getSurveys');
 
   @override
   Future<void> getSurveys() {
     return _$getSurveysAsyncAction.run(() => super.getSurveys());
+  }
+
+  final _$_HomeViewModelBaseActionController =
+      ActionController(name: '_HomeViewModelBase');
+
+  @override
+  int getSelectedAnswer(List<String> list) {
+    final _$actionInfo = _$_HomeViewModelBaseActionController.startAction(
+        name: '_HomeViewModelBase.getSelectedAnswer');
+    try {
+      return super.getSelectedAnswer(list);
+    } finally {
+      _$_HomeViewModelBaseActionController.endAction(_$actionInfo);
+    }
   }
 
   @override
@@ -115,7 +146,8 @@ questionCount: ${questionCount},
 surveyList: ${surveyList},
 joinedSurveys: ${joinedSurveys},
 isLoading: ${isLoading},
-participantModel: ${participantModel}
+participantModel: ${participantModel},
+currentSelectedCount: ${currentSelectedCount}
     ''';
   }
 }

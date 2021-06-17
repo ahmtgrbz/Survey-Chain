@@ -124,7 +124,7 @@ class EthereumChainService extends IEthereumChainService {
   Future<void> joinTheSurvey(
       BigInt surveyId, List<String> selectedAnswers) async {
     var result = await submit('joinTheSurvey', [surveyId, selectedAnswers]);
-    print(result);
+    print(result.toString());
   }
 
   @override
@@ -135,16 +135,6 @@ class EthereumChainService extends IEthereumChainService {
         name: result[1] ?? '',
         age: result[2] ?? BigInt.from(0),
       );
-    }
-    return null;
-  }
-
-  @override
-  Future<List<BigInt>?>? getJoinedSurveys(EthereumAddress address) async {
-    var result = await query('participantsJoinedSurveys', [address]);
-    if (result is List<BigInt>) {
-      print('ASD');
-      return result;
     }
     return null;
   }

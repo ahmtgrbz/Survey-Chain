@@ -381,7 +381,7 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_address",
+				"name": "userAddress",
 				"type": "address"
 			}
 		],
@@ -389,7 +389,7 @@
 		"outputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "",
+				"name": "surveyData",
 				"type": "uint256[]"
 			}
 		],
